@@ -21,23 +21,22 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.3.1.0
 Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
-D:\repos\cse-labs\cse4342 embedded 2\project\project.uvprojx
+D:\repos\Embed2 chicken coop\project\project.uvprojx
 Project File Date:  03/28/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.24', folder: 'C:\Users\turtl\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'Target_1'
-main.c(212): warning: passing 'const A4988_t *' to parameter of type 'A4988_t *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
-  212 |                 setSTEP(&stepperA, STEP_1);
+main.c(228): warning: passing 'const A4988_t *' to parameter of type 'A4988_t *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  228 |                 setSTEP(&stepperA, STEP_1);
       |                         ^~~~~~~~~
 .\stepper.h(34): note: passing argument to parameter 'stepper' here
    34 | void setSTEP(A4988_t * stepper, STEP_RES_t target);
       |                        ^
 1 warning generated.
 compiling main.c...
-compiling forceSensorCall.c...
 linking...
-Program Size: Code=2548 RO-data=552 RW-data=0 ZI-data=1640  
+Program Size: Code=2368 RO-data=560 RW-data=0 ZI-data=1640  
 ".\Objects\project.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -65,11 +64,11 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup@2.6.3
       Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
-      Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
       Source file:   MDK/Device/Source/ARM/STM32F446xx_OPT.s
+      Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

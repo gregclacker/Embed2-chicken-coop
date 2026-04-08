@@ -53,9 +53,13 @@ const GPIO_Pin_t
 		EB_USR_BTN = {
 			.port = GPIOC,
 			.pinN	= 13,
+		},
+		test_pin = {
+			.port = GPIOA,
+			.pinN = 1,
 		}
 		;
-
+		
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
 	SysTick->VAL	= 0;
@@ -95,6 +99,18 @@ int main(){
 	int FSR_Check = 0;
 	
 	/*** main loop ******************************************/
+	
+	{
+		test_pin.port->MODER &= ~	(0b11 << (2 * test_pin.pinN));
+		test_pin.port->MODER |= 	(0b01 << (2 * test_pin.pinN));
+		GPIO_setOut(&EB_LED, 0);
+		GPIO_setOut(&test_pin, 0);
+		while(1) {
+			GPIO_toggleOut(&EB_LED);
+			GPIO_toggleOut(&test_pin);
+			delaymS(2000);
+		}
+	}
 	
 	while(1) {
 		GPIO_toggleOut(&EB_LED);

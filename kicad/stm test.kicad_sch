@@ -4445,18 +4445,6 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "[-60,60]V tollerant\n[7,12]V working"
-		(exclude_from_sim no)
-		(at 35.306 19.304 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-				(color 194 0 194 1)
-			)
-			(justify left top)
-		)
-		(uuid "a4793b6c-3cc9-4756-a41c-e9815e4bb588")
-	)
 	(text "TODO:assign to convient gpio"
 		(exclude_from_sim no)
 		(at 272.288 82.55 0)
