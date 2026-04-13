@@ -5,36 +5,36 @@
 
 const A4988_t stepperA = {
 	.ms1 = {
-		.port	= GPIOB,
-		.pinN = 3,
+		.port	= GPIOA,
+		.pinN = 7,
 	},
 	.ms2 = {
 		.port = GPIOB,
-		.pinN	= 5,
+		.pinN	= 6,
 	},
 	.ms3 = {
-		.port = GPIOB,
-		.pinN	= 4,
+		.port = GPIOC,
+		.pinN	= 7,
 	},
 	.reset_n = {
-		.port = GPIOB,
-		.pinN	= 10,
+		.port = GPIOA,
+		.pinN	= 9,
 	},
 	.step = {
 		.port = GPIOA,
 		.pinN	= 8,
 	},
 	.dir = {
-		.port = GPIOA,
-		.pinN	= 10,
+		.port = GPIOD,
+		.pinN	= 3,
 	},
 	.sleep_n = {
 		.port = GPIOA,
-		.pinN	= 2,
+		.pinN	= 10,
 	},
 	.enable_n = {
 		.port = GPIOA,
-		.pinN	= 3,
+		.pinN	= 6,
 	},
 	.driveTimer = TIM1,
 };
@@ -53,13 +53,20 @@ const GPIO_Pin_t
 		EB_USR_BTN = {
 			.port = GPIOC,
 			.pinN	= 13,
-		},
-		test_pin = {
-			.port = GPIOA,
-			.pinN = 1,
 		}
 		;
-		
+
+const GPIO_Pin_t 
+	ledDriver_clk = {
+			.port = GPIOA,
+			.pinN = 3,
+		},
+	ledDriver_data = {
+			.port = GPIOA,
+			.pinN = 3,
+		}
+	;
+	
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
 	SysTick->VAL	= 0;
@@ -99,18 +106,6 @@ int main(){
 	int FSR_Check = 0;
 	
 	/*** main loop ******************************************/
-	
-	{
-		test_pin.port->MODER &= ~	(0b11 << (2 * test_pin.pinN));
-		test_pin.port->MODER |= 	(0b01 << (2 * test_pin.pinN));
-		GPIO_setOut(&EB_LED, 0);
-		GPIO_setOut(&test_pin, 0);
-		while(1) {
-			GPIO_toggleOut(&EB_LED);
-			GPIO_toggleOut(&test_pin);
-			delaymS(2000);
-		}
-	}
 	
 	while(1) {
 		GPIO_toggleOut(&EB_LED);
