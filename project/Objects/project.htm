@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Objects\project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Mon Apr 13 18:45:15 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Wed Apr 15 13:51:59 2026
 <BR><P>
-<H3>Maximum Stack Usage =        116 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        124 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 __rt_entry_main &rArr; main &rArr; initLED_Driver &rArr; Set_Color_RGB &rArr; P9813_SendColor &rArr; P9813_SendByte &rArr; P9813_ClockPulse &rArr; P9813_DelayCycles
 <P>
@@ -246,7 +246,7 @@ Global Symbols
 <P><STRONG><a name="[a9]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[6c]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 116 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 124 + Unknown Stack Size
 <LI>Call Chain = __rt_entry_main &rArr; main &rArr; initLED_Driver &rArr; Set_Color_RGB &rArr; P9813_SendColor &rArr; P9813_SendByte &rArr; P9813_ClockPulse &rArr; P9813_DelayCycles
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
@@ -672,7 +672,6 @@ Global Symbols
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_SendByte
 </UL>
 <BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initLED_Driver
-<LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[9]"></a>SysTick_Handler</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, main.o(.text.SysTick_Handler))
@@ -688,16 +687,16 @@ Global Symbols
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[86]"></a>initFsrHW</STRONG> (Thumb, 178 bytes, Stack size 0 bytes, forcesensorcall.o(.text.initFsrHW))
+<P><STRONG><a name="[86]"></a>initFsrHW</STRONG> (Thumb, 74 bytes, Stack size 0 bytes, forcesensorcall.o(.text.initFsrHW))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[80]"></a>initLED_Driver</STRONG> (Thumb, 120 bytes, Stack size 8 bytes, p9813call.o(.text.initLED_Driver))
 <BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = initLED_Driver &rArr; Set_Color_RGB &rArr; P9813_SendColor &rArr; P9813_SendByte &rArr; P9813_ClockPulse &rArr; P9813_DelayCycles
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_DATA_Low
+<BR>[Calls]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Color_RGB
+<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_DATA_Low
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_CLK_Low
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Color_RGB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -712,11 +711,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 318 bytes, Stack size 40 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 116<LI>Call Chain = main &rArr; initLED_Driver &rArr; Set_Color_RGB &rArr; P9813_SendColor &rArr; P9813_SendByte &rArr; P9813_ClockPulse &rArr; P9813_DelayCycles
+<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 354 bytes, Stack size 48 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 124<LI>Call Chain = main &rArr; initLED_Driver &rArr; Set_Color_RGB &rArr; P9813_SendColor &rArr; P9813_SendByte &rArr; P9813_ClockPulse &rArr; P9813_DelayCycles
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Color_RGB
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FsrWeightCheck
+<BR>[Calls]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FsrWeightCheck
 <LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initLED_Driver
 <LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initFsrHW
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initStepperA
@@ -769,8 +767,8 @@ Local Symbols
 <LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_DATA_High
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_DATA_Low
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_SendColor
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Color_RGB
+<BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Color_RGB
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;P9813_SendColor
 </UL>
 
 <P><STRONG><a name="[7e]"></a>P9813_SendColor</STRONG> (Thumb, 250 bytes, Stack size 16 bytes, p9813call.o(.text.P9813_SendColor))

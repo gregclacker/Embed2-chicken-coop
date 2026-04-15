@@ -5844,6 +5844,16 @@
 		)
 		(uuid "23a03f5b-1555-4d2e-8572-fa34c518193d")
 	)
+	(label "1b"
+		(at 58.42 134.62 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "25109e51-cf32-4c51-862b-c8598cef1f20")
+	)
 	(label "mcp.rst_n"
 		(at 242.57 85.09 0)
 		(effects
@@ -5973,6 +5983,16 @@
 			(justify right bottom)
 		)
 		(uuid "6eca81b0-72a8-4ab4-9a65-6ced2188dc86")
+	)
+	(label "2b"
+		(at 58.42 142.24 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7558d9b6-0ca5-40f5-9b9b-fac64ee2eacf")
 	)
 	(label "stepper.ms3"
 		(at 217.17 72.39 180)
@@ -6114,6 +6134,16 @@
 		)
 		(uuid "ca9d7412-d9c7-4d55-a2c4-d32202dd2ce2")
 	)
+	(label "1a"
+		(at 58.42 137.16 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "cb6a3d75-005e-4740-99fc-1d2f07b3257f")
+	)
 	(label "conv_M+"
 		(at 34.29 85.09 0)
 		(effects
@@ -6173,6 +6203,16 @@
 			(justify left bottom)
 		)
 		(uuid "f991c13a-721d-4ba3-9cd3-f2443a3f53b6")
+	)
+	(label "2a"
+		(at 58.42 139.7 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ff8a5f60-f08e-43d6-92bf-f60efd705d1c")
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")

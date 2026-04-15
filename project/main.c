@@ -66,7 +66,7 @@ const GPIO_Pin_t
 			.pinN = 3,
 		}
 	;
-	
+		
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
 	SysTick->VAL	= 0;
@@ -107,21 +107,50 @@ int main(){
 	
 	/*** main loop ******************************************/
 	
+	typedef enum {
+		IDLE,
+		SWEEPING,
+		CHICKEN_present,
+		RUN_CONV,
+	} State_e;
+		
+	State_e state;
+	
 	while(1) {
-		GPIO_toggleOut(&EB_LED);
+		//GPIO_toggleOut(&EB_LED);
 		FSR_Check = FsrWeightCheck();
+		
+		switch(state) {
+			default:
+			case IDLE: {
+					// stop everything, do nothing
+					// if weight or beam sensor triggered, -> CHICKEN_present
+				}break;
+			
+			case SWEEPING: {
+					// sweeper is moving, watch for chicken
+					// check beam sensor and weight
+				}break;
+			
+			case CHICKEN_present: break;
+			case RUN_CONV: break;
+		}
 		
 		switch(FSR_Check){
 			case FSRC_EMPTY:
-				Set_Color_RGB(0U,   0U,   255U);  // Yellow
+				//Set_Color_RGB(0U,   0U,   255U);  // Yellow
+				GPIO_setOut(&EB_LED, 0);
 			break;
 			
 			case FSRC_EGGONLY:
-				Set_Color_RGB(255U, 0U, 255U);    // Green
+				//Set_Color_RGB(255U, 0U, 255U);    // Green
+				GPIO_setOut(&EB_LED, 1);
 			break;
 			
 			case FSRC_CHICKEN:
-				Set_Color_RGB(0U, 255U, 255U);    // Red 
+				//Set_Color_RGB(0U, 255U, 255U);    // Red 
+				GPIO_toggleOut(&EB_LED);			
+				delaymS(100);
 			break;
 		}
 		/*
