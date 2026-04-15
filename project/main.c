@@ -114,7 +114,7 @@ int main(){
 		RUN_CONV,
 	} State_e;
 		
-	State_e state;
+	State_e state = IDLE;
 	
 	while(1) {
 		//GPIO_toggleOut(&EB_LED);
@@ -125,15 +125,41 @@ int main(){
 			case IDLE: {
 					// stop everything, do nothing
 					// if weight or beam sensor triggered, -> CHICKEN_present
+				
+					static int count = 0; 
+					switch(FSR_Check){
+						case FSRC_EMPTY: {
+								count = 0;
+							}break;
+						
+						case FSRC_EGGONLY: 
+						case FSRC_CHICKEN: {
+									count++;
+									if(count < 50) {
+										delaymS(100);
+										break;
+									}
+									count = 0;
+								state = CHICKEN_present;
+							}break;
+					}
 				}break;
 			
 			case SWEEPING: {
 					// sweeper is moving, watch for chicken
-					// check beam sensor and weight
+					// check beam sensor and weight for chicken, stop if detected
+					// -> run convayer belt afterwards
 				}break;
 			
-			case CHICKEN_present: break;
-			case RUN_CONV: break;
+			case CHICKEN_present: {
+					// wait for chicken to leave
+					// check weight for egg, -> sweeping
+				}break;
+			
+			case RUN_CONV: {
+					// run the conveyer for like 10 seconds
+					// -> idle
+				}break;
 		}
 		
 		switch(FSR_Check){
