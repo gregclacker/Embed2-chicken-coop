@@ -27,23 +27,18 @@ Project File Date:  03/28/2026
 <h2>Output:</h2>
 *** Using Compiler 'V6.24', folder: 'C:\Users\turtl\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'Target_1'
-main.c(123): warning: variable 'state' is uninitialized when used here [-Wuninitialized]
-  123 |                 switch(state) {
-      |                        ^~~~~
-main.c(117): note: variable 'state' is declared here
-  117 |         State_e state;
-      |         ^
-main.c(252): warning: passing 'const A4988_t *' to parameter of type 'A4988_t *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
-  252 |                 setSTEP(&stepperA, STEP_1);
-      |                         ^~~~~~~~~
-.\stepper.h(34): note: passing argument to parameter 'stepper' here
-   34 | void setSTEP(A4988_t * stepper, STEP_RES_t target);
-      |                        ^
-2 warnings generated.
+main.c(308): error: static assertion expression is not an integral constant expression
+  308 |                 _Static_assert(stepperA.step.pinN == 8, "update timer configuration");
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~
+main.c(309): error: static assertion expression is not an integral constant expression
+  309 |                 _Static_assert(stepperA.step.port == GPIOA, "update timer configuration");
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+main.c(310): error: static assertion expression is not an integral constant expression
+  310 |                 _Static_assert(stepperA.driveTimer == TIM1, "update timer configuration");
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+3 errors generated.
 compiling main.c...
-linking...
-Program Size: Code=2480 RO-data=552 RW-data=0 ZI-data=1640  
-".\Objects\project.axf" - 0 Error(s), 2 Warning(s).
+".\Objects\project.axf" - 3 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -69,11 +64,12 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE@6.1.1
 
    * Component: Keil::Device:Startup@2.6.3
-      Source file:   MDK/Device/Source/ARM/STM32F446xx_OPT.s
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
+      Source file:   MDK/Device/Source/ARM/STM32F446xx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+Target not created.
 Build Time Elapsed:  00:00:01
 </pre>
 </body>

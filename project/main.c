@@ -2,8 +2,12 @@
 #include "stepper.h"
 #include "fsr.h"
 #include "p9813.h"
+//#include "MCP23S08.h"
+#include "conveyor_belt.h"
+#include "light_beam.h"
 
-const A4988_t stepperA = {
+
+A4988_t stepperA = {
 	.ms1 = {
 		.port	= GPIOA,
 		.pinN = 7,
@@ -66,6 +70,29 @@ const GPIO_Pin_t
 			.pinN = 3,
 		}
 	;
+
+const GPIO_Pin_t 
+	hall_end = {
+			.port = GPIOA,
+			.pinN = 6,
+		},
+	hall_start = {
+			.port = GPIOA,
+			.pinN = 7,
+		}
+	;
+		
+const GPIO_Pin_t 
+	MCPCS = {
+			.port = GPIOA,
+			.pinN = 10,
+		};
+	
+/* MCP23S08_t mcp = (MCP23S08_t){
+		.cs = MCPCS,
+		.spi= SPI1,
+		.addr_ext = 0b11,
+	};*/
 		
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
@@ -98,14 +125,47 @@ int main(){
 	GPIO_setBiasPU(&EB_USR_BTN);
 	
 	initStepperA();
+	initPWM(); // conveyor belt 
+	initSPI1(); // beam sensor
+	initMCP(); // beam sensor
 	initFsrHW();
 	initLED_Driver();
+	
+	{ // init hall gpio sensor, DI
+		hall_end.port->MODER &= ~	(0b11 << (2 * hall_end.pinN));
+		hall_end.port->MODER |= 	(0b00 << (2 * hall_end.pinN));
+		
+		hall_start.port->MODER &= ~	(0b11 << (2 * hall_start.pinN));
+		hall_start.port->MODER |= 	(0b00 << (2 * hall_start.pinN));
+	}
 	
 	GPIO_setOut(&EB_LED, 0);
 	delaymS(250);
 	int FSR_Check = 0;
 	
 	/*** main loop ******************************************/
+	
+	/*{
+		{
+			RCC->AHB1ENR |= 0x1; // Enable GPIOA clock
+			GPIOA->MODER &= ~0xF000; // Clear PA6 and PA7 mode
+		}
+
+		volatile int i = 0;
+			
+	while(1)
+	{
+		if (!(GPIOA->IDR & 0x40)) {
+			GPIO_toggleOut(&EB_LED);
+			delaymS
+		}
+		
+		else if (!(GPIOA->IDR & 0x80))
+			i = 2;
+	}
+	
+	}*/
+	
 	
 	typedef enum {
 		IDLE,
@@ -125,40 +185,106 @@ int main(){
 			case IDLE: {
 					// stop everything, do nothing
 					// if weight or beam sensor triggered, -> CHICKEN_present
+					
+					{ // weight sensor must be consistent for 1S before any state transistion
+						static int FSR_previous = 12309123; // init with some bogus value
+						static uint32_t startTime_mS = 0;
 				
-					static int count = 0; 
+						if(FSR_previous != FSR_Check) {	// reset timer on weight change
+							startTime_mS = tick;
+							FSR_previous = FSR_Check;
+							break;
+						} else if(startTime_mS - tick < 1000) { // wait for state to remain the same for X mS
+							break;
+						}
+					}
+					
 					switch(FSR_Check){
-						case FSRC_EMPTY: {
-								count = 0;
-							}break;
-						
+						default:
+						case FSRC_EMPTY: 		break;
 						case FSRC_EGGONLY: 
-						case FSRC_CHICKEN: {
-									count++;
-									if(count < 50) {
-										delaymS(100);
-										break;
-									}
-									count = 0;
+						case FSRC_CHICKEN:
 								state = CHICKEN_present;
-							}break;
+							break;
 					}
 				}break;
 			
 			case SWEEPING: {
 					// sweeper is moving, watch for chicken
 					// check beam sensor and weight for chicken, stop if detected
-					// -> run convayer belt afterwards
+					// 	-> run convayer belt afterwards
+				
+					if(!beam_integrity()) { // if beam sensor go off assume chicken is around
+						FSR_Check = FSRC_CHICKEN; 
+					}
+				
+					static bool sweeping_out = true;
+					
+					switch(FSR_Check){
+						default:
+						case FSRC_EGGONLY: 
+						case FSRC_EMPTY:
+								
+								if(!sweeping_out && GPIO_getIn(&hall_start)) { // motor has returned to start
+									stepperStop(&stepperA);
+									sweeping_out = true;
+									state = RUN_CONV;
+								}
+								if(sweeping_out && GPIO_getIn(&hall_end)) { // motor has reached range limit
+									stepperStop(&stepperA);
+									sweeping_out = false;
+								}
+								
+								// set motor direction
+								GPIO_setOut(&stepperA.dir, sweeping_out);
+								
+								if(stepperIsStepping(&stepperA))
+									break;
+								
+								stepperSetSteps(&stepperA, 100);
+								
+						case FSRC_CHICKEN:
+								// stop the sweep
+								stepperStop(&stepperA);
+								delaymS(1000);
+							break;
+					}
 				}break;
 			
 			case CHICKEN_present: {
 					// wait for chicken to leave
 					// check weight for egg, -> sweeping
+					
+					{ // weight sensor must be consistent for 1S before any state transistion
+						static int FSR_previous = 12309123; // init with some bogus value
+						static uint32_t startTime_mS = 0;
+				
+						if(FSR_previous != FSR_Check) {	// reset timer on weight change
+							startTime_mS = tick;
+							FSR_previous = FSR_Check;
+							break;
+						} else if(!beam_integrity() || startTime_mS - tick < 1000) { // wait for state to remain the same for X mS
+							break;
+						}
+					}
+					
+					switch(FSR_Check){
+						default:
+						case FSRC_EMPTY: 
+						case FSRC_EGGONLY: 
+							state = SWEEPING;
+						case FSRC_CHICKEN:
+							break;
+					}
+					
 				}break;
 			
 			case RUN_CONV: {
 					// run the conveyer for like 10 seconds
 					// -> idle
+					PWM_on();
+					delaymS(10e3);
+					PWM_off();
 				}break;
 		}
 		
@@ -245,6 +371,7 @@ void initStepperA() {
 	GPIO_setOut(&stepperA.reset_n, 0); 	// enable reset
 	
 	{ // setup A8 as TIM1 output
+			// must be a advanced timer, need the featuer to automatically step X times
 		_Static_assert(stepperA.step.pinN == 8, "update timer configuration");
 		_Static_assert(stepperA.step.port == GPIOA, "update timer configuration");
 		_Static_assert(stepperA.driveTimer == TIM1, "update timer configuration");
@@ -258,7 +385,6 @@ void initStepperA() {
 		stepperA.step.port->AFR[1] |= 1;
 		
 		// timer setup
-		
 		stepperA.driveTimer->PSC = FCPU/1e6 - 1; // 1M
 		stepperA.driveTimer->ARR = 2e3 - 1; // 1mS period
 		stepperA.driveTimer->CR1 &= ~TIM_CR1_DIR; // up coutning
@@ -283,3 +409,4 @@ void initStepperA() {
 		GPIO_setOut(&stepperA.reset_n, 1); 	// disable reset
 	}
 }
+
