@@ -429,6 +429,36 @@
               <FileType>1</FileType>
               <FilePath>.\p9813Call.c</FilePath>
             </File>
+            <File>
+              <FileName>conveyor_belt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\conveyor_belt.c</FilePath>
+            </File>
+            <File>
+              <FileName>light_beam.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\light_beam.c</FilePath>
+            </File>
+            <File>
+              <FileName>MCP23S08.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MCP23S08.c</FilePath>
+            </File>
+            <File>
+              <FileName>conveyor_belt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\conveyor_belt.h</FilePath>
+            </File>
+            <File>
+              <FileName>light_beam.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\light_beam.h</FilePath>
+            </File>
+            <File>
+              <FileName>MCP23S08.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\MCP23S08.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -476,5 +506,14 @@
       </file>
     </files>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>project</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

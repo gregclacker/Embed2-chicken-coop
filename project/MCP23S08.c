@@ -38,10 +38,12 @@ void initMCPSPI() {
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN; // SPI1 clk
 	
 	// PA10 : DO : CS
+	/*
 	_Static_assert(MCPCS.port == GPIOA && MCPCS.pinN == 10,"bruh");
 	MCPCS.port->MODER &= ~(0b11 << (2 * MCPCS.pinN));
 	MCPCS.port->MODER |= 	(0b01 << (2 * MCPCS.pinN)); // DO
 	GPIO_setOut(&MCPCS, !MCPCS_ON);
+	*/
 	
 	// PB4 : SPI1 MISO
 	GPIOB->MODER &= ~(0b11 << (4*2));	// set to alternative mode

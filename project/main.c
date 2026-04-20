@@ -6,7 +6,6 @@
 #include "conveyor_belt.h"
 #include "light_beam.h"
 
-
 A4988_t stepperA = {
 	.ms1 = {
 		.port	= GPIOA,
@@ -166,6 +165,72 @@ int main(){
 	
 	}*/
 	
+	// test sanity
+	while(1) {
+		GPIO_toggleOut(&EB_LED);
+		delaymS(500);
+	}
+	
+	// test beam sensor
+	while(1) {
+		GPIO_setOut(&EB_LED, beam_integrity());
+	}
+	
+	// test conveyor motor
+	while(1) {
+		PWM_on();
+		delaymS(5e3);
+		PWM_off();
+		delaymS(5e3);
+	}
+	
+	// test hall sensors
+	while(1){
+		if(GPIO_getIn(&hall_end)) {
+			GPIO_toggleOut(&EB_LED);
+			delaymS(100);
+		} else if(GPIO_getIn(&hall_start)) {
+			GPIO_toggleOut(&EB_LED);
+			delaymS(500);
+		} else {
+			GPIO_setOut(&EB_LED, 0);
+		}
+	}
+	
+	// test stepper
+	if(!stepperIsStepping(&stepperA)) {
+		if(GPIO_getIn(&EB_USR_BTN) == 0){
+			GPIO_toggleOut(&stepperA.dir);
+			delaymS(250);
+		}
+		
+		stepperSetSteps(&stepperA, 100);
+		stepperStart(&stepperA);
+	}
+	
+	// test stepper & hall
+	while(1) {
+		static bool dir = false;
+		if(GPIO_getIn(&hall_end)) {
+			GPIO_toggleOut(&EB_LED);
+			dir = false;
+		} else if(GPIO_getIn(&hall_start)) {
+			GPIO_toggleOut(&EB_LED);
+			dir = true;
+		}
+		
+		// set motor direction
+		GPIO_setOut(&stepperA.dir, dir);
+		
+		if(stepperIsStepping(&stepperA))
+			break;
+		
+		stepperSetSteps(&stepperA, 100);
+		stepperStart(&stepperA);
+		
+		GPIO_toggleOut(&EB_LED);
+	}
+	
 	
 	typedef enum {
 		IDLE,
@@ -242,6 +307,7 @@ int main(){
 									break;
 								
 								stepperSetSteps(&stepperA, 100);
+								stepperStart(&stepperA);
 								
 						case FSRC_CHICKEN:
 								// stop the sweep
@@ -305,16 +371,6 @@ int main(){
 				delaymS(100);
 			break;
 		}
-		/*
-		if(!stepperIsStepping(&stepperA)) {
-			if(GPIO_getIn(&EB_USR_BTN) == 0){
-				GPIO_toggleOut(&stepperA.dir);
-				delaymS(250);
-			}
-			
-			stepperSetSteps(&stepperA, 100);
-			stepperStart(&stepperA);
-		}*/
 	}
 }
 
@@ -372,9 +428,11 @@ void initStepperA() {
 	
 	{ // setup A8 as TIM1 output
 			// must be a advanced timer, need the featuer to automatically step X times
+		/*
 		_Static_assert(stepperA.step.pinN == 8, "update timer configuration");
 		_Static_assert(stepperA.step.port == GPIOA, "update timer configuration");
 		_Static_assert(stepperA.driveTimer == TIM1, "update timer configuration");
+		*/
 		
 		RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // pg148
 		

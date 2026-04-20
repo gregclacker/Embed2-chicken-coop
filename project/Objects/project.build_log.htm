@@ -22,23 +22,15 @@ Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
 D:\repos\Embed2 chicken coop\project\project.uvprojx
-Project File Date:  03/28/2026
+Project File Date:  04/19/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.24', folder: 'C:\Users\turtl\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'Target_1'
-main.c(308): error: static assertion expression is not an integral constant expression
-  308 |                 _Static_assert(stepperA.step.pinN == 8, "update timer configuration");
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~
-main.c(309): error: static assertion expression is not an integral constant expression
-  309 |                 _Static_assert(stepperA.step.port == GPIOA, "update timer configuration");
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-main.c(310): error: static assertion expression is not an integral constant expression
-  310 |                 _Static_assert(stepperA.driveTimer == TIM1, "update timer configuration");
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-3 errors generated.
 compiling main.c...
-".\Objects\project.axf" - 3 Error(s), 0 Warning(s).
+linking...
+Program Size: Code=3184 RO-data=516 RW-data=68 ZI-data=1640  
+".\Objects\project.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -69,7 +61,6 @@ Package Vendor: Keil
       Source file:   MDK/Device/Source/ARM/STM32F446xx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Target not created.
 Build Time Elapsed:  00:00:01
 </pre>
 </body>
