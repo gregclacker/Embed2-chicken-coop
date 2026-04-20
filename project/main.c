@@ -171,6 +171,16 @@ int main(){
 		delaymS(500);
 	}
 	
+	// test LEDs
+	while(1) {
+		Set_Color_RGB(255,0,0);
+		delaymS(500);
+		Set_Color_RGB(0,255,0);
+		delaymS(500);
+		Set_Color_RGB(0,0,255);
+		delaymS(500);
+	}
+	
 	// test beam sensor
 	while(1) {
 		GPIO_setOut(&EB_LED, beam_integrity());
