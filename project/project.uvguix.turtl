@@ -3615,9 +3615,9 @@
       </Doc>
       <Doc>
         <Name>.\main.c</Name>
-        <ColumnNumber>25</ColumnNumber>
-        <TopLine>151</TopLine>
-        <CurrentLine>176</CurrentLine>
+        <ColumnNumber>4</ColumnNumber>
+        <TopLine>215</TopLine>
+        <CurrentLine>233</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -3705,9 +3705,9 @@
       </Doc>
       <Doc>
         <Name>.\conveyor_belt.c</Name>
-        <ColumnNumber>0</ColumnNumber>
+        <ColumnNumber>20</ColumnNumber>
         <TopLine>1</TopLine>
-        <CurrentLine>1</CurrentLine>
+        <CurrentLine>7</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -3723,9 +3723,9 @@
       </Doc>
       <Doc>
         <Name>.\light_beam.c</Name>
-        <ColumnNumber>0</ColumnNumber>
+        <ColumnNumber>13</ColumnNumber>
         <TopLine>1</TopLine>
-        <CurrentLine>1</CurrentLine>
+        <CurrentLine>48</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>

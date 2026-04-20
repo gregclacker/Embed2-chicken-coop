@@ -124,11 +124,11 @@ int main(){
 	GPIO_setBiasPU(&EB_USR_BTN);
 	
 	initStepperA();
-	initPWM(); // conveyor belt 
-	initSPI1(); // beam sensor
-	initMCP(); // beam sensor
-	initFsrHW();
-	initLED_Driver();
+	//initPWM(); // conveyor belt 
+	//initSPI1(); // beam sensor
+	//initMCP(); // beam sensor
+	//initFsrHW();
+	//initLED_Driver();
 	
 	{ // init hall gpio sensor, DI
 		hall_end.port->MODER &= ~	(0b11 << (2 * hall_end.pinN));
@@ -166,13 +166,15 @@ int main(){
 	}*/
 	
 	// test sanity
-	while(1) {
+	while(0) {
 		GPIO_toggleOut(&EB_LED);
 		delaymS(500);
 	}
 	
+	//Set_Color_RGB(0,0,0);
+	
 	// test LEDs
-	while(1) {
+	while(0) {
 		Set_Color_RGB(255,0,0);
 		delaymS(500);
 		Set_Color_RGB(0,255,0);
@@ -182,24 +184,39 @@ int main(){
 	}
 	
 	// test beam sensor
-	while(1) {
+	while(0) {
 		GPIO_setOut(&EB_LED, beam_integrity());
 	}
 	
 	// test conveyor motor
-	while(1) {
+	/* const GPIO_Pin_t 
+			pin = {
+				.port = GPIOA,
+				.pinN = 8,
+			};
+	pin.port->MODER &= ~	(0b11 << (2 * pin.pinN));
+	pin.port->MODER |= 	(0b01 << (2 * pin.pinN));
+	*/
+	while(0) {
+		/*
+		GPIO_setOut(&pin, 0);
+		delaymS(1e3);
+		GPIO_setOut(&pin, 1);
+		delaymS(1e3);
+		*/
+		
 		PWM_on();
 		delaymS(5e3);
 		PWM_off();
-		delaymS(5e3);
+		delaymS(10e3);
 	}
 	
 	// test hall sensors
-	while(1){
-		if(GPIO_getIn(&hall_end)) {
+	while(0){
+		if(!GPIO_getIn(&hall_end)) {
 			GPIO_toggleOut(&EB_LED);
 			delaymS(100);
-		} else if(GPIO_getIn(&hall_start)) {
+		} else if(!GPIO_getIn(&hall_start)) {
 			GPIO_toggleOut(&EB_LED);
 			delaymS(500);
 		} else {
@@ -208,14 +225,28 @@ int main(){
 	}
 	
 	// test stepper
-	if(!stepperIsStepping(&stepperA)) {
-		if(GPIO_getIn(&EB_USR_BTN) == 0){
-			GPIO_toggleOut(&stepperA.dir);
-			delaymS(250);
+	while(1) {
+		if(!stepperIsStepping(&stepperA)) {
+			stepperSetSteps(&stepperA, 100);
+			stepperStart(&stepperA);
 		}
 		
-		stepperSetSteps(&stepperA, 100);
-		stepperStart(&stepperA);
+		static uint32_t time = 0;
+		if(tick - time < 3000) {
+			GPIO_toggleOut(&stepperA.dir);
+			time = tick;
+		}
+		/*
+		if(!stepperIsStepping(&stepperA)) {
+			if(GPIO_getIn(&EB_USR_BTN) == 0){
+				GPIO_toggleOut(&stepperA.dir);
+				delaymS(250);
+			}
+			
+			stepperSetSteps(&stepperA, 100);
+			stepperStart(&stepperA);
+		}
+		*/
 	}
 	
 	// test stepper & hall

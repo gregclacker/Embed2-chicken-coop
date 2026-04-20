@@ -13,7 +13,7 @@
 void initPWM(void)
 {
   // 1) Enable clocks
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;   // GPIOB
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;   // GPIOAs
   RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;    // TIM1
 
   // 2) PB13 ? Alternate Function
