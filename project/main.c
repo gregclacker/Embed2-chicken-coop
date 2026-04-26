@@ -216,6 +216,13 @@ int main(){
 			Set_Color_RGB(255, 255, 255U);
 	}
 	
+	while(0) {
+		PWM_on();
+		delaymS(5e3);
+		PWM_off();
+		delaymS(5e3);
+	}
+	
 	// home swepper
 	GPIO_setOut(&stepperA.dir, 1);
 	while (!getHallStart())
@@ -359,6 +366,8 @@ void itt_stateB() {
 	if(fsr_zero < 0)
 		fsr_zero = getFSRRaw();
 	
+	static bool init_state = true;
+	
 	switch(state) {
 		case IDLE: {
 			/* wait for chicken to appear
@@ -371,6 +380,12 @@ void itt_stateB() {
 			
 			if(fsr_raw > fsr_zero + 300) {
 				chick_pres = true;
+			}
+			
+			if(init_state) {
+				init_state = false;
+				chick_pres = false;
+				chick_pres_former = !chick_pres;
 			}
 			
 			// value remain same for X time
@@ -387,6 +402,7 @@ void itt_stateB() {
 			
 			if(chick_pres) {
 				state = CHICKEN_PRES;
+				init_state = true;
 			}
 			
 		} break;
@@ -396,13 +412,94 @@ void itt_stateB() {
 				if totally empty, 
 			*/
 			Set_Color_RGB(255,0,255);
+			
+			static bool chick_pres_former = false;
+			bool chick_pres = chick_pres_former;
+			
+			if(fsr_raw < fsr_zero - 150) {
+				if(beam_integrity())
+					chick_pres = false;
+			}
+			
+			if(init_state) {
+				init_state = false;
+				chick_pres = false;
+				chick_pres_former = !chick_pres;
+			}
+			
+			// value remain same for X time
+			{
+				static uint32_t time = 0;
+				if(chick_pres_former != chick_pres) {
+					time = tick;
+					chick_pres_former = chick_pres;
+					break;
+				}
+				if(tick - time < 1000)
+					break;
+			}
+			
+			if(!chick_pres) {
+				if(fsr_raw < fsr_zero + 50)
+					state = IDLE;
+				else 
+					state = SWEEPING;
+				init_state = true;
+			}
+			
 		} break;
 		
 		case SWEEPING: {
+			Set_Color_RGB(255,255,0);
+			
+			static bool sweepOut;
+			if(init_state) {
+				init_state = false;
+				sweepOut = true;
+			}
+			
+			if(sweepOut)
+				GPIO_setOut(&stepperA.dir, 0);
+			else 
+				GPIO_setOut(&stepperA.dir, 1);
+			
+			if(!stepperIsStepping(&stepperA) && beam_check()) 
+			{
+				stepperSetSteps(&stepperA, 100);
+				stepperStart(&stepperA);
+			}
+			
+			if(sweepOut) {
+				if(getHallEnd())
+					sweepOut = false;
+			} else {
+				if(getHallStart()) {
+					state = RUN_CONV;
+					init_state = true;
+				}
+			}
 			
 		} break;
 		
 		case RUN_CONV: {
+			Set_Color_RGB(0,0,0);
+			
+			static uint32_t time;
+			
+			if(init_state) {
+				init_state = false;
+				time = tick;
+			}
+			
+			if(tick - time < 10e3) {
+				PWM_on();
+				break;
+			}
+			
+			PWM_off();
+			
+			init_state = true;
+			state = IDLE;
 			
 		} break;
 	}
