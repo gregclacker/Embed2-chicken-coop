@@ -1,9 +1,9 @@
 #include "fsr.h"
+#include "common.h"
 
 #define FSR_SAMPLE_COUNT 16
 
-#define THRESH_H 1445 
-#define THRESH_L 989
+#define THRESH 2000
 
 volatile uint8_t FsrSafetyTriggered = 0;
 
@@ -24,11 +24,12 @@ void initFsrHW(void)
 	// PA0: Analog Mode (11), No Pull-up (00)
 	GPIOA->MODER |= (3U << (0 * 2));
 	GPIOA->PUPDR &= ~(3U << (0 * 2));
-
+  RCC->AHB1ENR |= BV(0); // PA
 	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 	ADC1->SQR3 = 0;              // Sequence 1 = Channel 0
 	ADC1->CR2 |= ADC_CR2_ADON;   // Enable ADC
-}
+
+	}
 
 /*
 void initFsrHW(void)
@@ -60,6 +61,10 @@ void initFsrHW(void)
 }
 */
 
+#include "fsr.h"
+
+
+
 FsrCondition_t FsrWeightCheck(void)
 {
     uint32_t avg = 0;
@@ -67,16 +72,14 @@ FsrCondition_t FsrWeightCheck(void)
 
     ADC1->CR2 &= ~ADC_CR2_CONT; // Make sure ADC is in single conversion mode
 
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 50; i++){
         avg += ADC1_Read();
-    avg >>= 4;
+		}
+        avg = avg/50;
 
-    if (avg < THRESH_L)
+		if (avg > THRESH)
         return FSRC_CHICKEN;
-    else if (avg > THRESH_H)
-        return FSRC_EMPTY;
-    else
-        return FSRC_EGGONLY;
+		else return FSRC_EGGONLY;
 }
 
 void ConfigureSafetyInterrupt(void)
