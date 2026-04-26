@@ -73,11 +73,11 @@ const GPIO_Pin_t
 const GPIO_Pin_t 
 	hall_end = {
 			.port = GPIOA,
-			.pinN = 6,
+			.pinN = 13,
 		},
 	hall_start = {
 			.port = GPIOA,
-			.pinN = 7,
+			.pinN = 14,
 		};
 		
 const GPIO_Pin_t 
@@ -129,7 +129,7 @@ int main(){
 	GPIO_setBiasPU(&EB_USR_BTN);
 	
 	initStepperA();
-	setSTEP(&stepperA, STEP_16);
+	setSTEP(&stepperA, STEP_4);
 	initPWM(); // conveyor belt 
 	//initSPI1(); // beam sensor
 	//initMCP(); // beam sensor
@@ -147,186 +147,26 @@ int main(){
 	GPIO_setOut(&EB_LED, 0);
 	delaymS(250);
 	int FSR_Check = 0;
+	
+//	while(1)
+//				{
+//					GPIO_setOut(&stepperA.dir, 0);
+//					if(!stepperIsStepping(&stepperA)) 
+//					{
+//						stepperSetSteps(&stepperA, 100);
+//						stepperStart(&stepperA);
+//					}
+//				} 
 	/*
 	/*** main loop ******************************************/
 //	/*
-//	const GPIO_Pin_t 
-//			pin = {
-//					.port = GPIOA,
-//					.pinN = 0,
-//				};
-//	pin.port->MODER &= ~	(0b11 << (2 * pin.pinN));
-//	pin.port->MODER |= 	(0b01 << (2 * pin.pinN));
-//	while(1) {
-//		GPIO_setOut(&pin, 1);
-//	}
-//	*/
-//				
-//				
-//	while(0){
-//		PWM_on();
-//		//GPIO_setOut(&pin, 1);
-//		delaymS(1e3);
-//		PWM_off();
-//		//GPIO_setOut(&pin, 0);
-//		delaymS(1e3);
-//	}
-//	
-//	/*{
-//		{
-//			RCC->AHB1ENR |= 0x1; // Enable GPIOA clock
-//			GPIOA->MODER &= ~0xF000; // Clear PA6 and PA7 mode
-//		}
-
-//		volatile int i = 0;
-//			
-//	while(1)
-//	{
-//		if (!(GPIOA->IDR & 0x40)) {
-//			GPIO_toggleOut(&EB_LED);
-//			delaymS
-//		}
-//		
-//		else if (!(GPIOA->IDR & 0x80))
-//			i = 2;
-//	}
-//	
-//	}*/
-//	
-//	// test sanity
-//	while(0) {
-//		GPIO_toggleOut(&EB_LED);
-//		delaymS(500);
-//	}
-//	
-//	//Set_Color_RGB(0,0,0);
-//	
-//	// test LEDs
-//	while(1){
-//        
-//		FSR_Check = FsrWeightCheck();		
-//			switch(FSR_Check){
-//				
-//				default: Set_Color_RGB(255U, 255U, 255U);  //Off
-//				
-//				case FSRC_EMPTY: 		
-//					Set_Color_RGB(255U, 255U, 0U);    // Blue
-//					break;
-//				case FSRC_EGGONLY: 
-//					Set_Color_RGB(0U, 255U, 255U);    // Red
-//					break;
-//				case FSRC_CHICKEN:
-//					Set_Color_RGB(255U, 0U, 255U);    // Green
-//					break;
-//				}
-//	}
-//	
-//	// test beam sensor
-//	while(0) {
-//		//if(!beam_check()) {
-//			GPIO_setOut(&EB_LED, beam_integrity());
-//		//}
-//	}
-//	
-//	
-//	// test conveyor motor
-//	/* const GPIO_Pin_t 
-//			pin = {
-//				.port = GPIOA,
-//				.pinN = 8,
-//			};
-//	pin.port->MODER &= ~	(0b11 << (2 * pin.pinN));
-//	pin.port->MODER |= 	(0b01 << (2 * pin.pinN));
-//	*/
-//	while(0) {
-//		/*
-//		GPIO_setOut(&pin, 0);
-//		delaymS(1e3);
-//		GPIO_setOut(&pin, 1);
-//		delaymS(1e3);
-//		*/
-//		
-//		PWM_on();
-//		delaymS(5e3);
-//		PWM_off();
-//		delaymS(10e3);
-//	}
-//	
-//	// test hall sensors
-//	while(0){
-//		if(!GPIO_getIn(&hall_end)) {
-//			GPIO_toggleOut(&EB_LED);
-//			delaymS(100);
-//		} else if(!GPIO_getIn(&hall_start)) {
-//			GPIO_toggleOut(&EB_LED);
-//			delaymS(500);
-//		} else {
-//			GPIO_setOut(&EB_LED, 0);
-//		}
-//	}
-//	
-//	
-//	// test stepper
-//	GPIO_setOut(&stepperA.dir, 0);
-//	//setSTEP(&stepperA, STEP_8);
-//	while(1) {
-//		if(!stepperIsStepping(&stepperA)) {
-//			stepperSetSteps(&stepperA, 100);
-//			stepperStart(&stepperA);
-//		}	
-//		
-//		static uint32_t time = 0;
-//		if(tick - time >= 3000) {
-//			GPIO_toggleOut(&stepperA.dir);
-//			time = tick;
-//			GPIO_toggleOut(&EB_LED);
-//		}
-//		
-//		
-//		/*
-//		if(!GPIO_getIn(&hall_end)) {
-//			GPIO_setOut(&stepperA.dir, 0);
-//		} else if(!GPIO_getIn(&hall_start)) {
-//			GPIO_setOut(&stepperA.dir, 1);
-//		}
-//		*/
-//	}
-//	
-//	// test stepper & hall
-//	while(0) {
-//		static bool dir = false;
-//		if(GPIO_getIn(&hall_end)) {
-//			GPIO_toggleOut(&EB_LED);
-//			dir = false;
-//		} else if(GPIO_getIn(&hall_start)) {
-//			GPIO_toggleOut(&EB_LED);
-//			dir = true;
-//		}
-//		
-//		// set motor direction
-//		GPIO_setOut(&stepperA.dir, dir);
-//		
-//		if(stepperIsStepping(&stepperA))
-//			break;
-//		
-//		stepperSetSteps(&stepperA, 100);
-//		stepperStart(&stepperA);
-//		
-//		GPIO_toggleOut(&EB_LED);
-//	}
-//	
-//	
-//	while(1) {
-
-//	}
-	
 	
 	typedef enum {
 		IDLE,
 		BEAM,
 		SWEEPING,
-		CHICKEN_present,
 		RUN_CONV,
+		RETURNING,
 	} State_e;
 		
 	State_e state = IDLE;
@@ -344,14 +184,23 @@ int main(){
 	Set_Color_RGB(255U, 255U, 255U);  //Off
 	delaymS(1000);
 	
+	while (1)
+	{
+		if (GPIO_getIn(&hall_start))
+			Set_Color_RGB(0U, 255U, 255U);
+		else if (GPIO_getIn(&hall_end))
+			Set_Color_RGB(0U, 0U, 255U);
+
+	}
+	
 	while(1) {
+				
 		//GPIO_toggleOut(&EB_LED);
 		FSR_Check = FsrWeightCheck();
 		
 		if (FSR_Check == FSRC_CHICKEN)
 		{
 			state = IDLE;
-			break;
 		}
 		
 		else if (state == IDLE && FSR_Check == FSRC_EGGONLY)
@@ -364,9 +213,9 @@ int main(){
 		{
 			case IDLE:
 			{
-				Set_Color_RGB(0U, 255U, 255U); // RED for IDLE
 				// Return to start position if not there already
-				while (GPIO_getIn(&hall_start))
+				Set_Color_RGB(0U, 255U, 255U); // RED for IDLE
+				while(GPIO_getIn(&hall_start))
 				{
 					GPIO_setOut(&stepperA.dir, 1);
 					if(!stepperIsStepping(&stepperA)) 
@@ -376,7 +225,8 @@ int main(){
 					}
 				}
 				
-				stepperStop(&stepperA);
+				//stepperStop(&stepperA);
+				
 				break;
 			}
 			
@@ -414,137 +264,35 @@ int main(){
 				PWM_on();
 				delaymS(10000);
 				PWM_off();
-				state = IDLE;
+				state = RETURNING;
+			}
+			
+			case RETURNING:
+			{
+				Set_Color_RGB(0U,   180U, 255U);  // Orange    
+				// Return to start position if not there already
+				while (GPIO_getIn(&hall_start))
+				{
+					GPIO_setOut(&stepperA.dir, 1);
+					if(!stepperIsStepping(&stepperA)) 
+					{
+						stepperSetSteps(&stepperA, 100);
+						stepperStart(&stepperA);
+					}
+				}
+				
+				stepperStop(&stepperA);
+				
+				// Stay here until chicken returns
+				if (FSR_Check == FSRC_CHICKEN)
+					state = IDLE;
+				
+				break;
 			}
 		}
+		
 	}
-//		switch(state) {
-//			default:
-//			case IDLE: {
-//					// stop everything, do nothing
-//					// if weight or beam sensor triggered, -> CHICKEN_present
-//					
-//					{ // weight sensor must be consistent for 1S before any state transistion
-//						static int FSR_previous = 12309123; // init with some bogus value
-//						static uint32_t startTime_mS = 0;
-//				
-//						if(FSR_previous != FSR_Check) {	// reset timer on weight change
-//							startTime_mS = tick;
-//							FSR_previous = FSR_Check;
-//							break;
-//						} else if(startTime_mS - tick < 1000) { // wait for state to remain the same for X mS
-//							break;
-//						}
-//					}
-//					
-//					switch(FSR_Check){
-//						default:
-//						case FSRC_EMPTY: 		break;
-//						case FSRC_EGGONLY: 
-//						case FSRC_CHICKEN:
-//								state = CHICKEN_present;
-//							break;
-//					}
-//				}break;
-//			
-//			case SWEEPING: {
-//					// sweeper is moving, watch for chicken
-//					// check beam sensor and weight for chicken, stop if detected
-//					// 	-> run convayer belt afterwards
-//				
-//					if(!beam_integrity()) { // if beam sensor go off assume chicken is around
-//						FSR_Check = FSRC_CHICKEN; 
-//					}
-//				
-//					static bool sweeping_out = true;
-//					
-//					switch(FSR_Check){
-//						default:
-//						case FSRC_EGGONLY: 
-//						case FSRC_EMPTY:
-//								
-//								if(!sweeping_out && GPIO_getIn(&hall_start)) { // motor has returned to start
-//									stepperStop(&stepperA);
-//									sweeping_out = true;
-//									state = RUN_CONV;
-//								}
-//								if(sweeping_out && GPIO_getIn(&hall_end)) { // motor has reached range limit
-//									stepperStop(&stepperA);
-//									sweeping_out = false;
-//								}
-//								
-//								// set motor direction
-//								GPIO_setOut(&stepperA.dir, !sweeping_out); // 0 : push away from motor, 1 : pull towards motor
-//								
-//								if(stepperIsStepping(&stepperA))
-//									break;
-//								
-//								stepperSetSteps(&stepperA, 100);
-//								stepperStart(&stepperA);
-//								
-//						case FSRC_CHICKEN:
-//								// stop the sweep
-//								stepperStop(&stepperA);
-//								delaymS(1000);
-//							break;
-//					}
-//				}break;
-//			
-//			case CHICKEN_present: {
-//					// wait for chicken to leave
-//					// check weight for egg, -> sweeping
-//					
-//					{ // weight sensor must be consistent for 1S before any state transistion
-//						static int FSR_previous = 12309123; // init with some bogus value
-//						static uint32_t startTime_mS = 0;
-//				
-//						if(FSR_previous != FSR_Check) {	// reset timer on weight change
-//							startTime_mS = tick;
-//							FSR_previous = FSR_Check;
-//							break;
-//						} else if(tick - startTime_mS < 1000) { // wait for state to remain the same for X mS							
-//							break;
-//						}
-//					}
-//					
-//					switch(FSR_Check){
-//						default:
-//						case FSRC_EMPTY: 
-//						case FSRC_EGGONLY: 
-//							state = SWEEPING;
-//						case FSRC_CHICKEN:
-//							break;
-//					}
-//					
-//				}break;
-//			
-//			case RUN_CONV: {
-//					// run the conveyer for like 10 seconds
-//					// -> idle
-//					PWM_on();
-//					delaymS(10e3);
-//					PWM_off();
-//				}break;
-//		}
-//		
-//		switch(FSR_Check){
-//			case FSRC_EMPTY:
-//				//Set_Color_RGB(0U,   0U,   255U);  // Yellow
-//				GPIO_setOut(&EB_LED, 0);
-//			break;
-//			
-//			case FSRC_EGGONLY:
-//				//Set_Color_RGB(255U, 0U, 255U);    // Green
-//				GPIO_setOut(&EB_LED, 1);
-//			break;
-//			
-//			case FSRC_CHICKEN:
-//				//Set_Color_RGB(0U, 255U, 255U);    // Red 
-//				GPIO_toggleOut(&EB_LED);			
-//				delaymS(100);
-//			break;
-//		}
-//	}
+				Set_Color_RGB(0U,   180U, 255U);  // Orange  
 }
 
 void SysTick_Handler(void) {

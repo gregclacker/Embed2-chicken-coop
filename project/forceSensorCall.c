@@ -106,7 +106,7 @@ void ConfigureSafetyInterrupt(void)
     ADC1->CR1 |= ADC_CR1_AWDIE; // Enable watchdog interrupt
 
     ADC1->LTR = 0; // Lower threshold
-    ADC1->HTR = THRESH_H; // Upper threshold
+    ADC1->HTR = THRESH; // Upper threshold
 
     NVIC_ClearPendingIRQ(ADC_IRQn);
     NVIC_EnableIRQ(ADC_IRQn);
