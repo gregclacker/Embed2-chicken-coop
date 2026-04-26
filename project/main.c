@@ -73,11 +73,11 @@ const GPIO_Pin_t
 const GPIO_Pin_t 
 	hall_end = {
 			.port = GPIOA,
-			.pinN = 13,
+			.pinN = 14,
 		},
 	hall_start = {
 			.port = GPIOA,
-			.pinN = 14,
+			.pinN = 13,
 		};
 		
 const GPIO_Pin_t 
@@ -96,7 +96,21 @@ const GPIO_Pin_t
 #include "stm32f4xx.h"
 #include "conveyor_belt.h"
 		
-		void main_womp();
+void main_womp();
+		
+/** itterate state machine (version A) */
+void itt_stateA();
+		
+/** itterate state machine (version B) */
+void itt_stateB();
+
+bool getHallStart() {
+	return GPIO_getIn(&hall_start);
+}
+bool getHallEnd() {
+	return GPIO_getIn(&hall_end);
+}	
+		
 		
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
@@ -105,7 +119,7 @@ int main(){
 	SysTick->CTRL |= BV(0); 	// enable SysTick
 	
 	// enable clock
-	RCC->AHB1ENR |= BV(0); // PA
+	RCC->AHB1ENR |= BV(0); // PA  
 	RCC->AHB1ENR |= BV(1); // PB
 	RCC->AHB1ENR |= BV(2); // PC
 	RCC->AHB1ENR |= BV(3); // PD
@@ -129,7 +143,7 @@ int main(){
 	GPIO_setBiasPU(&EB_USR_BTN);
 	
 	initStepperA();
-	setSTEP(&stepperA, STEP_4);
+	setSTEP(&stepperA, STEP_1);
 	initPWM(); // conveyor belt 
 	//initSPI1(); // beam sensor
 	//initMCP(); // beam sensor
@@ -142,11 +156,13 @@ int main(){
 		
 		hall_start.port->MODER &= ~	(0b11 << (2 * hall_start.pinN));
 		hall_start.port->MODER |= 	(0b00 << (2 * hall_start.pinN));
+	
+		GPIO_setBiasPD(&hall_end);
+		GPIO_setBiasPD(&hall_end);
 	}
 	
 	GPIO_setOut(&EB_LED, 0);
 	delaymS(250);
-	int FSR_Check = 0;
 	
 //	while(1)
 //				{
@@ -157,9 +173,69 @@ int main(){
 //						stepperStart(&stepperA);
 //					}
 //				} 
-	/*
+	
 	/*** main loop ******************************************/
-//	/*
+	
+	Set_Color_RGB(0U,   255U, 0U);    // Purple
+	delaymS(1000);
+	Set_Color_RGB(255U, 255U, 255U);  //Off
+	delaymS(1000);
+	Set_Color_RGB(0U,   255U, 0U);    // Purple
+	delaymS(1000);
+	Set_Color_RGB(255U, 255U, 255U);  //Off
+	delaymS(1000);
+	Set_Color_RGB(0U,   255U, 0U);    // Purple
+	delaymS(1000);
+	Set_Color_RGB(255U, 255U, 255U);  //Off
+	delaymS(1000);
+	
+	// full range sweep
+	while (0)
+	{
+		if (getHallStart()) {
+			Set_Color_RGB(0U, 255U, 255U);
+			GPIO_setOut(&stepperA.dir, 0);
+		} else if (getHallEnd()) {
+			Set_Color_RGB(255, 0U, 255U);
+			GPIO_setOut(&stepperA.dir, 1);
+		} else
+			Set_Color_RGB(255, 255, 255U);
+		
+		if(!stepperIsStepping(&stepperA)) 
+		{
+			stepperSetSteps(&stepperA, 100);
+			stepperStart(&stepperA);
+		}
+	}
+	
+	// test beam
+	while(0) {
+		if (beam_check()) {
+				Set_Color_RGB(0U, 255U, 255U);
+		} else 
+			Set_Color_RGB(255, 255, 255U);
+	}
+	
+	// home swepper
+	GPIO_setOut(&stepperA.dir, 1);
+	while (!getHallStart())
+	{
+		if(!stepperIsStepping(&stepperA)) 
+		{
+			stepperSetSteps(&stepperA, 200);
+			stepperStart(&stepperA);
+		}
+	}
+	
+	while(1) {
+			//itt_stateA();
+			itt_stateB();
+	}
+				Set_Color_RGB(0U,   180U, 255U);  // Orange  
+}
+
+void itt_stateA() {
+	
 	
 	typedef enum {
 		IDLE,
@@ -169,34 +245,10 @@ int main(){
 		RETURNING,
 	} State_e;
 		
-	State_e state = IDLE;
+	static State_e state = IDLE;
+	static int FSR_Check = 0;
 	
-	Set_Color_RGB(0U,   255U, 0U);    // Purple
-	delaymS(1000);
-	Set_Color_RGB(255U, 255U, 255U);  //Off
-	delaymS(1000);
-	Set_Color_RGB(0U,   255U, 0U);    // Purple
-	delaymS(1000);
-	Set_Color_RGB(255U, 255U, 255U);  //Off
-	delaymS(1000);
-	Set_Color_RGB(0U,   255U, 0U);    // Purple
-	delaymS(1000);
-	Set_Color_RGB(255U, 255U, 255U);  //Off
-	delaymS(1000);
-	
-	while (1)
-	{
-		if (GPIO_getIn(&hall_start))
-			Set_Color_RGB(0U, 255U, 255U);
-		else if (GPIO_getIn(&hall_end))
-			Set_Color_RGB(0U, 0U, 255U);
-
-	}
-	
-	while(1) {
-				
-		//GPIO_toggleOut(&EB_LED);
-		FSR_Check = FsrWeightCheck();
+	FSR_Check = FsrWeightCheck();
 		
 		if (FSR_Check == FSRC_CHICKEN)
 		{
@@ -290,10 +342,72 @@ int main(){
 				break;
 			}
 		}
-		
-	}
-				Set_Color_RGB(0U,   180U, 255U);  // Orange  
 }
+
+void itt_stateB() {
+	typedef enum {
+		IDLE,
+		CHICKEN_PRES,
+		SWEEPING,
+		RUN_CONV,
+	} State_e;
+		
+	static State_e state = IDLE;
+	
+	int volatile fsr_raw = getFSRRaw();
+	static volatile int fsr_zero = -1;
+	if(fsr_zero < 0)
+		fsr_zero = getFSRRaw();
+	
+	switch(state) {
+		case IDLE: {
+			/* wait for chicken to appear
+					transistion to CHICKEN_PRES when detected 
+			*/
+			Set_Color_RGB(0,255,255);
+			
+			bool chick_pres = false;
+			static bool chick_pres_former = false;
+			
+			if(fsr_raw > fsr_zero + 300) {
+				chick_pres = true;
+			}
+			
+			// value remain same for X time
+			{
+				static uint32_t time = 0;
+				if(chick_pres_former != chick_pres) {
+					time = tick;
+					chick_pres_former = chick_pres;
+					break;
+				}
+				if(tick - time < 1000)
+					break;
+			}
+			
+			if(chick_pres) {
+				state = CHICKEN_PRES;
+			}
+			
+		} break;
+		
+		case CHICKEN_PRES: {
+			/* wait for chicken to dissipear
+				if totally empty, 
+			*/
+			Set_Color_RGB(255,0,255);
+		} break;
+		
+		case SWEEPING: {
+			
+		} break;
+		
+		case RUN_CONV: {
+			
+		} break;
+	}
+}
+
 
 void SysTick_Handler(void) {
 	tick++;

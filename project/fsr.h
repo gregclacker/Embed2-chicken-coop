@@ -15,6 +15,8 @@ typedef enum FsrCondition_e {
 extern const GPIO_Pin_t
 	ForceInput;
 
+uint16_t getFSRRaw();
+
 extern volatile uint8_t FsrSafetyTriggered;
 
 void initFsrHW(void);

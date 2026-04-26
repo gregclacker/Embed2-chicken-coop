@@ -64,6 +64,16 @@ void initFsrHW(void)
 #include "fsr.h"
 
 
+uint16_t getFSRRaw() {
+	uint32_t avg = 0;
+	int i;
+	for (i = 0; i < 50; i++)
+		avg += ADC1_Read();
+	
+	avg = avg/50;
+	
+	return avg;
+}
 
 FsrCondition_t FsrWeightCheck(void)
 {
