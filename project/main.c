@@ -134,7 +134,7 @@ int main(){
 	//initPWM(); // conveyor belt 
 	//initSPI1(); // beam sensor
 	//initMCP(); // beam sensor
-	//initFsrHW();
+	initFsrHW();
 	initLED_Driver();
 	
 	{ // init hall gpio sensor, DI
@@ -200,8 +200,23 @@ int main(){
 	//Set_Color_RGB(0,0,0);
 	
 	// test LEDs
-	while(1) {
-			main_womp();
+	while(1){
+        
+		FSR_Check = FsrWeightCheck();		
+			switch(FSR_Check){
+				
+				default: Set_Color_RGB(255U, 255U, 255U);  //Off
+				
+				case FSRC_EMPTY: 		
+					Set_Color_RGB(255U, 255U, 0U);    // Blue
+					break;
+				case FSRC_EGGONLY: 
+					Set_Color_RGB(0U, 255U, 255U);    // Red
+					break;
+				case FSRC_CHICKEN:
+					Set_Color_RGB(255U, 0U, 255U);    // Green
+					break;
+				}
 	}
 	
 	// test beam sensor
@@ -300,14 +315,7 @@ int main(){
 	
 	
 	while(1) {
-		FSR_Check = FsrWeightCheck();
-		switch(FSR_Check){
-				default:
-				case FSRC_EMPTY: 
-				case FSRC_EGGONLY:
-				case FSRC_CHICKEN:
-					break;
-			}
+
 	}
 	
 	typedef enum {
