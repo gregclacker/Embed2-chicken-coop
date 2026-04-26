@@ -97,6 +97,8 @@ const GPIO_Pin_t
 #include "stm32f4xx.h"
 #include "conveyor_belt.h"
 		
+		void main_womp();
+		
 int main(){
 	SysTick->LOAD = FCPU/1000 - 1;
 	SysTick->VAL	= 0;
@@ -127,11 +129,12 @@ int main(){
 	EB_USR_BTN.port->MODER |= 	(0b00 << (2 * EB_USR_BTN.pinN));
 	GPIO_setBiasPU(&EB_USR_BTN);
 	
-	initStepperA();
-	initPWM(); // conveyor belt 
-	initSPI1(); // beam sensor
-	initMCP(); // beam sensor
-	initFsrHW();
+	//initStepperA();
+	//setSTEP(&stepperA, STEP_16);
+	//initPWM(); // conveyor belt 
+	//initSPI1(); // beam sensor
+	//initMCP(); // beam sensor
+	//initFsrHW();
 	initLED_Driver();
 	
 	{ // init hall gpio sensor, DI
@@ -158,7 +161,7 @@ int main(){
 	pin.port->MODER |= 	(0b01 << (2 * pin.pinN));
 				*/
 	
-	while(1){
+	while(0){
 		PWM_on();
 		//GPIO_setOut(&pin, 1);
 		delaymS(1e3);
@@ -197,18 +200,12 @@ int main(){
 	//Set_Color_RGB(0,0,0);
 	
 	// test LEDs
-	while(0) {
-		Set_Color_RGB(255,0,0);
-		delaymS(500);
-		Set_Color_RGB(0,255,0);
-		delaymS(500);
-		Set_Color_RGB(0,0,255);
-		delaymS(500);
+	while(1) {
+			main_womp();
 	}
 	
 	// test beam sensor
-	GPIO_setOut(&EB_LED, 0);
-	while(1) {
+	while(0) {
 		//if(!beam_check()) {
 			GPIO_setOut(&EB_LED, beam_integrity());
 		//}
@@ -254,34 +251,32 @@ int main(){
 	
 	// test stepper
 	GPIO_setOut(&stepperA.dir, 0);
-	setSTEP(&stepperA, STEP_8);
+	//setSTEP(&stepperA, STEP_8);
 	while(1) {
 		if(!stepperIsStepping(&stepperA)) {
 			stepperSetSteps(&stepperA, 100);
 			stepperStart(&stepperA);
-		}
+		}	
 		
-		/*
 		static uint32_t time = 0;
 		if(tick - time >= 3000) {
 			GPIO_toggleOut(&stepperA.dir);
 			time = tick;
 			GPIO_toggleOut(&EB_LED);
 		}
-		*/
 		
-		static uint32_t time = 0;
-		if(!GPIO_getIn(&hall_end) && (tick - time > 2000)) {
-			GPIO_toggleOut(&stepperA.dir);
-			time = tick;
-		} else if(!GPIO_getIn(&hall_start)  && (tick - time > 2000)) {
-			GPIO_toggleOut(&stepperA.dir);
-			time = tick;
+		
+		/*
+		if(!GPIO_getIn(&hall_end)) {
+			GPIO_setOut(&stepperA.dir, 0);
+		} else if(!GPIO_getIn(&hall_start)) {
+			GPIO_setOut(&stepperA.dir, 1);
 		}
+		*/
 	}
 	
 	// test stepper & hall
-	while(1) {
+	while(0) {
 		static bool dir = false;
 		if(GPIO_getIn(&hall_end)) {
 			GPIO_toggleOut(&EB_LED);
@@ -303,6 +298,17 @@ int main(){
 		GPIO_toggleOut(&EB_LED);
 	}
 	
+	
+	while(1) {
+		FSR_Check = FsrWeightCheck();
+		switch(FSR_Check){
+				default:
+				case FSRC_EMPTY: 
+				case FSRC_EGGONLY:
+				case FSRC_CHICKEN:
+					break;
+			}
+	}
 	
 	typedef enum {
 		IDLE,
