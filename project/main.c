@@ -363,8 +363,6 @@ void itt_stateB() {
 	
 	int volatile fsr_raw = getFSRRaw();
 	static volatile int fsr_zero = -1;
-	if(fsr_zero < 0)
-		fsr_zero = getFSRRaw();
 	
 	static bool init_state = true;
 	
@@ -373,7 +371,7 @@ void itt_stateB() {
 			/* wait for chicken to appear
 					transistion to CHICKEN_PRES when detected 
 			*/
-			Set_Color_RGB(0,255,255);
+			if(init_state) Set_Color_RGB(0,255,255);
 			
 			bool chick_pres = false;
 			static bool chick_pres_former = false;
@@ -386,6 +384,7 @@ void itt_stateB() {
 				init_state = false;
 				chick_pres = false;
 				chick_pres_former = !chick_pres;
+				fsr_zero = getFSRRaw();
 			}
 			
 			// value remain same for X time
@@ -411,19 +410,20 @@ void itt_stateB() {
 			/* wait for chicken to dissipear
 				if totally empty, 
 			*/
-			Set_Color_RGB(255,0,255);
+			if(init_state) Set_Color_RGB(255,0,255);
 			
 			static bool chick_pres_former = false;
 			bool chick_pres = chick_pres_former;
 			
-			if(fsr_raw < fsr_zero - 150) {
-				if(beam_integrity())
+			if(fsr_raw < fsr_zero + 150) {
+				//if(beam_integrity())
+				if(beam_check())
 					chick_pres = false;
 			}
 			
 			if(init_state) {
 				init_state = false;
-				chick_pres = false;
+				chick_pres = true;
 				chick_pres_former = !chick_pres;
 			}
 			
@@ -440,17 +440,18 @@ void itt_stateB() {
 			}
 			
 			if(!chick_pres) {
-				if(fsr_raw < fsr_zero + 50)
+				if(fsr_raw < fsr_zero)
 					state = IDLE;
 				else 
 					state = SWEEPING;
 				init_state = true;
+				delaymS(1e3);
 			}
 			
 		} break;
 		
 		case SWEEPING: {
-			Set_Color_RGB(255,255,0);
+			if(init_state) Set_Color_RGB(255,255,0);
 			
 			static bool sweepOut;
 			if(init_state) {
@@ -470,8 +471,10 @@ void itt_stateB() {
 			}
 			
 			if(sweepOut) {
-				if(getHallEnd())
+				if(getHallEnd()) {
 					sweepOut = false;
+					delaymS(1e3);
+				}
 			} else {
 				if(getHallStart()) {
 					state = RUN_CONV;
