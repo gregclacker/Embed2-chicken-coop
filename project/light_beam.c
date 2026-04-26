@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include "stm32f4xx.h"
 #include <stdint.h>
+#include "common.h"
 #include "light_beam.h"
 
 #define IODIR    0x00
@@ -43,11 +44,15 @@ void initSPI1()
   GPIOA->MODER &= ~0x300000;     // Clear PA10 Mode
   GPIOA->MODER |=  0x100000;     // Set PA10 output Mode
   GPIOA->ODR |= 0x400;        // CS HIGH (idle)
+	
+	RCC->AHB1ENR |= 3; // Enable Port C
+	GPIOC->MODER &= ~	(0b11 << (2 * 3));
 }
 
 void cs_low()
 {
   GPIOA->ODR &= ~0x400;
+	delaymS(10);
 }
 
 void cs_high()
@@ -133,15 +138,14 @@ void beam_toggle(bool light)
 
 bool beam_check(void)
 {
-  uint8_t val = read_reg(GPIO);
-  return (val & (1 << 4)) != 0;
+  return (GPIOC->IDR & 0x8);
 }
 
 bool beam_integrity(void)
 {
   beam_toggle(true);
 
-  for (volatile int d = 0; d < 4000000; d++);
+  delaymS(100);
 
   for (int i = 0; i < 5; i++)
   {
@@ -151,7 +155,7 @@ bool beam_integrity(void)
       return false;
     }
 
-    for (volatile int d = 0; d < 4000000; d++);
+    delaymS(1000);
   }
 
   beam_toggle(false);
